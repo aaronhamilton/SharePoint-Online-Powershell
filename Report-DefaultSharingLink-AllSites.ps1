@@ -1,4 +1,6 @@
-﻿# CONNECT
+<# Run this script in PowerShell ISE #>
+
+ # CONNECT
 Connect-SPOService -Url https://octoeeo-admin.sharepoint.com
 
 
