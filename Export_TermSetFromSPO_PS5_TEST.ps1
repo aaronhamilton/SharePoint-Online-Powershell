@@ -8,16 +8,38 @@ $AdminURL = "https://octoeeo-admin.sharepoint.com/"
 $TermGroupName = "OCT\POLICY"
 $TermSetName = "Legal Opinion Topics"
 $CSVFile="C:\TermSetData_LegalOpinions.csv"
+
+<#
+$ClientID = '0d41b098-a79a-4288-a366-b4b8811c1d52' # Microsoft Graph PowerShell - High Privilege admin use only - Microsoft Azure 
+$TenandID = '403b5de9-f888-4fef-9eea-bd256ecec060' # octoeeo
+$MSGraphConnection = @()
+
+function ConnectMSGraph() {
+    if($null -eq $MSGraphConnection.Account ){
+        #$connection = Connect-MgGraph -ClientId $ClientID -TenantId $TenandID -Scopes Group.Read.All,Directory.ReadWrite.All,Group.ReadWrite.All
+        $connection = Connect-MgGraph -ClientId $ClientID -TenantId $TenandID -Scopes Group.Read.All,Directory.ReadWrite.All,Group.ReadWrite.All, User.ReadWrite.All, UserActivity.ReadWrite.CreatedByApp
+        return $connection
+    }
+}
+
+Import-Module Microsoft.Graph.Identity.SignIns
+#>
+
  
 Try {
     #Get Credentials to connect
-    $Cred = Get-Credential
-    $Credentials = New-Object Microsoft.SharePoint.Client.SharePointOnlineCredentials($Cred.Username, $Cred.Password)
+#    $Cred = Get-Credential
+#    $Credentials = New-Object Microsoft.SharePoint.Client.SharePointOnlineCredentials($Cred.Username, $Cred.Password)
  
     #Setup the context
-    $Ctx = New-Object Microsoft.SharePoint.Client.ClientContext($AdminURL)
-    $Ctx.Credentials = $Credentials
- 
+#    $Ctx = New-Object Microsoft.SharePoint.Client.ClientContext($AdminURL) 
+#    $Ctx.Credentials = $Credentials
+
+#Setup Authentication Manager
+$AuthenticationManager = new-object OfficeDevPnP.Core.AuthenticationManager
+$Ctx = $AuthenticationManager.GetWebLoginClientContext($SiteUrl)
+$Ctx.Load($Ctx.Web)
+
     #Get the term store
     $TaxonomySession=[Microsoft.SharePoint.Client.Taxonomy.TaxonomySession]::GetTaxonomySession($Ctx)
     $TermStore =$TaxonomySession.GetDefaultSiteCollectionTermStore()
